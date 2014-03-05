@@ -4,7 +4,7 @@
  */
 
 var express = require('express');
-var story = require('story.js');
+var story = require('storyapp.js');
 var http = require('http');
 var path = require('path');
 
