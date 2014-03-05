@@ -1,12 +1,4 @@
-var connection_string = '127.0.0.1:27017/story';
-// if OPENSHIFT env variables are present, use the available connection info:
-if(process.env.OPENSHIFT_MONGODB_DB_PASSWORD){
-	connection_string = "admin:Xt8Bdq55BS@" +
-	process.env.OPENSHIFT_MONGODB_DB_HOST + ':' +
-	process.env.OPENSHIFT_MONGODB_DB_PORT + "/nodejs";
-}
-
-var db = require('mongoskin').db(connection_string);
+var db = require('mongoskin').db(process.env.OPENSHIFT_MONGODB_DB_URL + "story");
 
 exports.findAll = function(req, res) {
 	db.collection('comments').find().toArray(function(err, comments) {
