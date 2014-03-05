@@ -3,8 +3,7 @@ var connection_string = '127.0.0.1:27017/story';
 if(process.env.OPENSHIFT_MONGODB_DB_PASSWORD){
 	connection_string = "admin:Xt8Bdq55BS@" +
 	process.env.OPENSHIFT_MONGODB_DB_HOST + ':' +
-	process.env.OPENSHIFT_MONGODB_DB_PORT + '/' +
-	process.env.OPENSHIFT_APP_NAME;
+	process.env.OPENSHIFT_MONGODB_DB_PORT + "/nodejs";
 }
 
 var db = require('mongoskin').db(connection_string);
