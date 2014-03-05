@@ -72,7 +72,8 @@
 			<div class="span6">
 				<div class="row-fluid" style="height:400px;overflow:auto;">
 					<div class="span11" >
-						<% comments.forEach(function(comment){ %>
+						<% if (typeof comments !== 'undefined'){ 
+							comments.forEach(function(comment){ %>
 						<div class="card">
 							<h2 class="card-heading simple"><%= comment.nickname %></h2>
 							<p class="pull-right">
@@ -83,7 +84,8 @@
 								<p><%= comment.content %></p>
 							</div>
 						</div><!--card-->
-						<% }); %>
+						<% });
+						}; %>
 					</div>
 				</div>
 				<div class="row-fluid">

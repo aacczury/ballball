@@ -29,6 +29,7 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', story.findAll);
+app.post('/', story.addComment);
 
 http.createServer(app).listen(app.get('port'), app.get('ipaddress'), function(){
   console.log('Express server listening on port ' + app.get('port'));

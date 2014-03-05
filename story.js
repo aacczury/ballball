@@ -7,11 +7,11 @@ exports.findAll = function(req, res) {
 	});
 }
 
-/*exports.addComment = function(req, res) {
+exports.addComment = function(req, res) {
 	var comment = req.body;
 	console.log('Adding comment: ' + JSON.stringify(comment));
 	db.collection('comments').insert(comment, function(err, result){
 		console.log(result);
 		res.redirect('/');
 	});
-}*/
+}
