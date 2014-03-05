@@ -1,11 +1,10 @@
-//var db = require('mongoskin').db("mongodb://$OPENSHIFT_MONGODB_DB_HOST:$OPENSHIFT_MONGODB_DB_PORT/story");
+var db = require('mongoskin').db("mongodb://$OPENSHIFT_MONGODB_DB_HOST:$OPENSHIFT_MONGODB_DB_PORT/story");
 
 exports.findAll = function(req, res) {
-	//db.collection('comments').find().toArray(function(err, comments) {
-	var comments = [];
+	db.collection('comments').find().toArray(function(err, comments) {
 		console.log(comments);
 		res.render('story', { comments: comments });
-	//});
+	});
 }
 
 /*exports.addComment = function(req, res) {
