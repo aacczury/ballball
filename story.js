@@ -1,4 +1,4 @@
-var db = require('mongoskin').MongoClient.connect(process.env.OPENSHIFT_MONGODB_DB_URL + "story");
+var db = require('mongoskin').MongoClient.connect(process.env.OPENSHIFT_MONGODB_DB_URL + "nodejs");
 
 console.log(process.env.OPENSHIFT_MONGODB_DB_URL + "story");
 exports.findAll = function(req, res) {
