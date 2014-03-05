@@ -1,4 +1,5 @@
-var db = require('mongoskin').db(process.env.OPENSHIFT_MONGODB_DB_URL + "story/");
+var db = require('mongoskin').MongoClient.connect(process.env.OPENSHIFT_MONGODB_DB_URL + "story");
+
 console.log(process.env.OPENSHIFT_MONGODB_DB_URL + "story");
 exports.findAll = function(req, res) {
 	db.collection('comments').find().toArray(function(err, comments) {
