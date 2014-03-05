@@ -4,8 +4,7 @@
  */
 
 var express = require('express');
-var routes = require('./routes');
-var user = require('./routes/user');
+var story = require('story.js');
 var http = require('http');
 var path = require('path');
 
@@ -29,11 +28,7 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
-app.get('/', function(req, res) {
-	var comments = [];
-	res.render('story', { comments: comments });
-});
-//app.get('/users', user.list);
+app.get('/', story.findAll);
 
 http.createServer(app).listen(app.get('port'), app.get('ipaddress'), function(){
   console.log('Express server listening on port ' + app.get('port'));
