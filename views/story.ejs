@@ -50,14 +50,12 @@
 
 	<div class="container-fluid" style="height:100%;">
 		<div class="row-fluid">
-			<% var n = typeof imageN !== 'undefined' ? imageN : images.length - 1; 
-			%>
 			<div class="span7">
 				<div class="row-fluid">
-						<% if (typeof images !== 'undefined'){ 
-						%>
 					<div id="allimg" class="span2" >
 						<ul class="nav nav-list">
+							<% var n = typeof imageN !== 'undefined' ? imageN : images.length - 1; 
+							%>
 							<% for(var i = 0; i < images.length; ++ i ){ %>
 								<li <% if(i == n){ %>class="active"<% } %>><a href="<%= i %>"><img style="height:100px;display: block;margin:auto;" src="uploads/thumbs/<%= images[i].name %>" /></a></li>
 							<% } %>
@@ -65,6 +63,8 @@
 					</div>
 					<div class="span10" >
 						<div class="card">
+						<% if (typeof images !== 'undefined' && images.length > 0){ 
+						%>
 							<div class="card-media" style="background-color:#F5F5F5;margin:16px;">
 								<a class="card-media-container" href="uploads/fullsize/<%= images[n].name %>" target="_blank">
 									<img style="display: block;margin:auto;height:600px" src="uploads/fullsize/<%= images[n].name %>" alt="media"/>
@@ -73,6 +73,7 @@
 							<div class="card-body">
 								<p><%= images[n].text %></p>
 							</div>
+						<% }; %>
 						</div>
 						<div class="card">
 							<div class="card-body">
@@ -84,7 +85,6 @@
 							</div>
 						</div>
 					</div>
-					<% }; %>
 				</div>
 			</div><!--/span-->
 		
