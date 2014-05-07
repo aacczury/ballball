@@ -91,6 +91,7 @@
 			<div class="span5">
 				<div class="row-fluid">
 					<div id="allcomment" class="span11" >
+						<div id="commentHeight">
 						<% if (typeof comments !== 'undefined'){ 
 							for(var i = 0; i < comments.length; ++ i ){ %>
 						<div class="card">
@@ -111,6 +112,7 @@
 						</div><!--card-->
 						<% }
 						}; %>
+						</div>
 					</div>
 				</div>
 				<div class="row-fluid">
@@ -146,7 +148,7 @@
   $(function(){
 	$('#allimg').perfectScrollbar();
 	$('#allcomment').perfectScrollbar();
-	$('#allcomment').scrollTop($('#allcomment').height());
+	$('#allcomment').scrollTop($('#commentHeight').height());
   });
 </script>
 </body>
