@@ -98,7 +98,7 @@
 								<img src="holder.js/46x46" alt=""/>
 								<div class="card-heading-header">
 									<h3><%= comment.nickname %></h3>
-								<span>Published today - 08.34 AM</span>
+								<span><%= comment._id.getTimestamp() %></span>
 								</div>
 								<div class="card-body">
 									<p><%= comment.content %></p>
