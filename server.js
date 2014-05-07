@@ -10,6 +10,10 @@ var path = require('path');
 
 var app = express();
 
+app.configure(function () {
+  app.use(express.bodyParser());
+});
+
 // all environments
 app.set('ipaddress', process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1");
 app.set('port', process.env.OPENSHIFT_NODEJS_PORT || 8080);
@@ -29,7 +33,9 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', story.findAll);
-app.post('/', story.addComment);
+app.get('/:id', story.findOne);
+app.post('/comment', story.addComment);
+app.post('/upload', story.upload);
 
 http.createServer(app).listen(app.get('port'), app.get('ipaddress'), function(){
   console.log('Express server listening on port ' + app.get('port'));
