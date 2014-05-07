@@ -92,16 +92,16 @@
 				<div class="row-fluid">
 					<div id="allcomment" class="span11" >
 						<% if (typeof comments !== 'undefined'){ 
-							comments.forEach(function(comment){ %>
+							for(var i = 0; i < comments.length; ++ i ){ %>
 						<div class="card">
 							<div class="card-heading image">
-								<img src="holder.js/46x46" alt=""/>
+								<img src="holder.js/46x46/sky/text:<%= i+1 %>" alt="sky"/>
 								<div class="card-heading-header">
-									<h3><%= comment.nickname %></h3>
-								<span><%= comment._id.getTimestamp() %></span>
+									<h3><%= comments[i].nickname %></h3>
+								<span><%= comments[i]._id.getTimestamp() %></span>
 								</div>
 								<div class="card-body">
-									<p><%= comment.content %></p>
+									<p><%= comments[i].content %></p>
 								</div>
 							</div>
 							<div class="card-actions">
@@ -109,7 +109,7 @@
 								<button class="btn">Share</button>
 							</div>
 						</div><!--card-->
-						<% });
+						<% }
 						}; %>
 					</div>
 				</div>
