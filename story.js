@@ -47,8 +47,8 @@ exports.upload = function(req, res) {
 			sha1.update(String((new Date()).getTime()));
 			sha1.update(imageName);
 			imageName = sha1.digest('hex') + "_" + imageName;
-			var newPath = __dirname + "\\public\\uploads\\fullsize\\" + imageName;
-			var thumbPath = __dirname + "\\public\\uploads\\thumbs\\" + imageName;
+			var newPath = __dirname + "/public/uploads/fullsize/" + imageName;
+			var thumbPath = __dirname + "/public/uploads/thumbs/" + imageName;
 			/// write file to uploads/fullsize folder
 			fs.writeFile(newPath, data, function (err) {
 			/// write file to uploads/thumbs folder
