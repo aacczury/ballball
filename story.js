@@ -71,8 +71,9 @@ module.exports = function(io){
 						db.collection('images').insert(imageText, function(err, result){
 							console.log(result);
 							if(err) throw err;
+							io.sockets.emit('getImage', imageText);
+							res.redirect("/");
 						});
-						res.redirect("/");
 				  });
 				}
 			});

@@ -54,7 +54,7 @@
 			<div class="span7">
 				<div class="row-fluid">
 					<div id="allimg" class="span2" >
-						<ul class="nav nav-list">
+						<ul class="nav nav-list" id="imglist">
 							<% var n = typeof imageN !== 'undefined' ? imageN : images.length - 1; 
 							%>
 							<% for(var i = 0; i < images.length; ++ i ){ %>
@@ -70,12 +70,12 @@
 						<% if (typeof images !== 'undefined' && images.length > 0){ 
 						%>
 							<div class="card-media" style="background-color:#F5F5F5;margin:16px;">
-								<a class="card-media-container" href="uploads/fullsize/<%= images[n].name %>" target="_blank">
-									<img style="display: block;margin:auto;height:600px" src="uploads/fullsize/<%= images[n].name %>" alt="media"/>
+								<a class="card-media-container" id="imglink" href="uploads/fullsize/<%= images[n].name %>" target="_blank">
+									<img id="imgfull" style="display: block;margin:auto;height:600px" src="uploads/fullsize/<%= images[n].name %>" alt="media"/>
 								</a>
 							</div>
 							<div class="card-body">
-								<p><%= images[n].text %></p>
+								<p id="imgtext"><%= images[n].text %></p>
 							</div>
 						<% }; %>
 						</div>
@@ -169,6 +169,7 @@
 <script src="javascripts/perfect-scrollbar-0.4.10.with-mousewheel.min.js"></script>
 <script>
 	var commentCount = <%= comments.length | 0 %>;
+	var imgCount = <%= images.length | 0 %>;
 	
 	var socket = io.connect('http://nodejs-aczry.rhcloud.com/');
 	//var socket = io.connect('http://127.0.0.1');
@@ -245,11 +246,30 @@
 		d.parent().remove();
 	});
 	
+	socket.on('getImage', function(imginfo){
+		d = new Date();
+		$("#imglist").find("[class='active']").attr("class", "");
+		$("#imglist").append(
+			"<li class=\"active\">" +
+				"<button class=\"close\" type=\"button\" style=\"width:10px\"></button>" +
+				"<a href=\""+ imgCount + "\"><img style=\"height:100px;display: block;margin:auto;\" src=\"uploads/thumbs/" + imginfo.name + "\" /></a>" +
+			"</li>"
+		)
+		$('#allimg').animate({
+			scrollTop: $('#imglist').height()
+		}, 500);
+		$("#imglink").attr("href", "uploads/fullsize/" + imginfo.name);
+		$("#imgfull").attr("src", "uploads/fullsize/" + imginfo.name);
+		$("#imgtext").html(imginfo.text);
+		imgCount ++;
+	});
+	
 	
 	$(function(){
 		$('#allimg').perfectScrollbar();
 		$('#allcomment').perfectScrollbar();
 		$('#allcomment').scrollTop($('#commentHeight').height());
+		$('#allimg').scrollTop($('#imglist').height());
 		/*
 		$('#signup input[type="submit"]').click(function(e){                            
 			e.preventDefault();  
