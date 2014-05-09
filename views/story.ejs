@@ -142,11 +142,11 @@
 						<div class="card">
 							<h2 class="card-heading simple">喊價</h2>
 							<div class="card-body">
-								<!--<form action="/comment" method="post">-->
+								<form id="entercomment">
 									<input id="nickname" type="text" placeholder="Nickname" name="nickname">
 									<input id="content" type="text" placeholder="Content" name="content">
 									<button id="commentSend" type="submit" class="btn">Send</button>
-								<!--</form>-->
+								</form>
 							</div>
 						</div><!--card-->
 					</div><!--/span-->
@@ -174,11 +174,18 @@
 	var socket = io.connect('http://nodejs-aczry.rhcloud.com/');
 	//var socket = io.connect('http://127.0.0.1');
 	
-	$("#commentSend").click(function(){
+	function sendComment(){
 		var addComment = {};
 		addComment.nickname = $("#nickname").val();
 		addComment.content = $("#content").val();
 		socket.emit('addComment', addComment);
+	}
+	
+	$("#commentSend").click(sendComment);
+	$('#entercomment').on('keyup', '.getInput', function(e){
+		if(e.keyCode == '13'){
+			sendComment();
+		}
 	});
 	
 	socket.on('newComment', function (comment) {
