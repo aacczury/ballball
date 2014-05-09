@@ -110,13 +110,17 @@
 							<% for(var i = 0; i < comments.length; ++ i ){ %>
 							<div class="card">
 								<div class="card-heading image" style="padding-bottom:10px">
-									<button class="btn pull-right">+1</button>
-									<img class="floor" id="<%= comments[i]._id %>" src="holder.js/46x46/<% if(comments[i].point){ %>lava<% }else{ %>sky<% } %>/text:<%= i+1 %>" alt="<%= i+1 %>"/>
-									<div class="card-heading-header">
-										<span style="font-size:15px;color:black;"><%= comments[i].nickname %></span>
-										<span><%= comments[i].content %></span><br/>
-										<% var d = new Date(comments[i]._id.getTimestamp()) %>
-										<span><%= d.getFullYear() + "/" + d.getMonth() + "/" + d.getDate() + " " + d.toLocaleTimeString() %></span>
+									<button class="btn pull-right">+1</button>	
+									<div style="display:table-row">
+										<img style="display:table-cell" class="floor" id="<%= comments[i]._id %>" src="holder.js/46x46/<% if(comments[i].point){ %>lava<% }else{ %>sky<% } %>/text:<%= i+1 %>" alt="<%= i+1 %>"/>
+										<div style="display:table-cell" class="card-heading-header">
+											<span style="font-size:15px;color:black;"><%= comments[i].nickname %></span>
+											<% var d = new Date(comments[i]._id.getTimestamp()) %>
+											<span><%= d.getFullYear() + "/" + d.getMonth() + "/" + d.getDate() + " " + d.toLocaleTimeString() %></span>
+											<p style="word-break:break-all;">
+												<%= comments[i].content %>
+											</p>
+										</div>
 									</div>
 								</div>
 							</div><!--card-->
@@ -185,34 +189,18 @@
 	
 	socket.on('newComment', function (comment) {
 		commentCount ++;
-		/*$("#commentHeight").append(
-			"<div class=\"card\">" +
-				"<div class=\"card-heading image\">" +
-					"<img class=\"floor\" id=\""+ comment.id +"\" src=\"holder.js/46x46/sky/text:"+ commentCount +"\" alt=\""+ commentCount +"\"/>" +
-					"<div class=\"card-heading-header\">"+
-						"<h3>"+ comment.name +"</h3>"+
-					"<span>"+ new Date(comment.time) +"</span>" +
-					"</div>" +
-					"<div class=\"card-body\">" +
-						"<p>"+ comment.content +"</p>" +
-					"</div>" +
-				"</div>" +
-				"<div class=\"card-actions\">" +
-					"<button class=\"btn\">+1</button>" +
-					"<button class=\"btn\">Share</button>" +
-				"</div>" +
-			"</div>"
-		);*/
 		var d = new Date(comment.time);
 		$("#commentHeight").append(
 			"<div class=\"card\">" +
 				"<div class=\"card-heading image\" style=\"padding-bottom:10px\">" +
 					"<button class=\"btn pull-right\">+1</button>" +
-					"<img class=\"floor\" id="+ comment.id +" src=\"holder.js/46x46/sky/text:"+ commentCount +"\" alt=\""+ commentCount +"\"/>" +
-					"<div class=\"card-heading-header\">" +
-						"<span style=\"font-size:15px;color:black;\">"+ comment.name +"</span>" +
-						"<span>"+ comment.content +"</span><br/>" +
-						"<span>" + d.getFullYear() + "/" + d.getMonth() + "/" + d.getDate() + " " + d.toLocaleTimeString() + "</span>" +
+					"<div style=\"display:table-row\">" +
+						"<img style=\"display:table-cell\" class=\"floor\" id="+ comment.id +" src=\"holder.js/46x46/sky/text:"+ commentCount +"\" alt=\""+ commentCount +"\"/>" +
+						"<div style=\"display:table-cell\" class=\"card-heading-header\">" +
+							"<span style=\"font-size:15px;color:black;\">"+ comment.name +"</span>" +
+							"<span>" + d.getFullYear() + "/" + d.getMonth() + "/" + d.getDate() + " " + d.toLocaleTimeString() + "</span>" +
+							"<p style=\"word-break:break-all\">"+ comment.content +"</p><br/>" +
+						"</div>" +
 					"</div>" +
 				"</div>" +
 			"</div>"
