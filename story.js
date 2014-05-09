@@ -12,7 +12,7 @@ module.exports = function(io){
 			db.collection('comments').find().toArray(function(err, comments) {
 				console.log(comments);
 				db.collection('images').find().toArray(function(err, images){
-					db.collection('inputs').find().toArray(function(err, inputs){
+					db.collection('inputs').find().sort({'num':1}).toArray(function(err, inputs){
 						console.log(inputs);
 						res.render('story', { comments: comments, images: images, inputs: inputs });
 					});
@@ -104,9 +104,11 @@ module.exports = function(io){
 		
 		postInput : function (iv) {
 			db.collection('inputs').insert(iv, function(err, result){
-				console.log(result);
-				console.log("Input num: " + result[0].num);
-				io.sockets.emit('getInput', result[0]);
+				if(!err){
+					console.log(result);
+					console.log("Input num: " + result[0].num);
+					io.sockets.emit('getInput', result[0]);
+				}
 			});
 		}
 	};

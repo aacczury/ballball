@@ -21,7 +21,7 @@
 		}
         #allimg { position:relative; margin:10px auto; padding:0px; height:400px; overflow: hidden; }
         #allcomment { position:relative; margin:0px auto 12px; padding:0px; height:698px; overflow: hidden; }
-		.floor{ cursor: pointer}
+		.floor{ cursor: pointer }
 	</style>
 	<link rel="stylesheet" type="text/css" href="stylesheets/bootplus-responsive.min.css" />
 </head>
@@ -99,7 +99,7 @@
 							<% var j = 0; %>
 							<% if( typeof inputs !== 'undefined' && inputs.length > j && inputs[j].num == 0 ){
 								%>
-								<div class=\"alert  alert-info\" style=\"margin-top:8px;\"><%= inputs[j].text %></div>
+								<div class="alert  alert-info" style="margin-top:8px;"><%= inputs[j].text %></div>
 							<% j++; }else{ %>
 							<div class="getInput" style="height:22px;">
 								<input type="text" alt="0" style="display:none;background-color:rgba(0,0,0,0.0);border:0px;margin:-3px 0 3px 0;">
@@ -124,7 +124,7 @@
 									<button class="btn">Share</button>
 								</div>
 							</div><!--card-->
-							<% if( typeof inputs !== 'undefined' && inputs.length > j && inputs[j].num == i ){ 
+							<% if( typeof inputs !== 'undefined' && inputs.length > j && inputs[j].num == i + 1 ){ 
 								%>
 							<div class="alert  alert-info" style="margin-top:8px;"><%= inputs[j].text %></div>
 							<% j++; }else{ %>
@@ -171,6 +171,7 @@
 	var commentCount = <%= comments.length | 0 %>;
 	
 	var socket = io.connect('http://nodejs-aczry.rhcloud.com/');
+	//var socket = io.connect('http://127.0.0.1');
 	
 	$("#commentSend").click(function(){
 		var addComment = {};
@@ -229,7 +230,7 @@
 	$('#commentHeight').on('keyup', '.getInput', function(e){
 		if(e.keyCode == '13'){
 			var iv = {
-				num : $(this).children().attr("alt"),
+				num : parseInt($(this).children().attr("alt")),
 				text : $(this).children().val()
 			}
 			socket.emit('postInput', iv);
