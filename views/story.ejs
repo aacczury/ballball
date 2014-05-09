@@ -179,6 +179,7 @@
 		addComment.nickname = $("#nickname").val();
 		addComment.content = $("#content").val();
 		socket.emit('addComment', addComment);
+		$("#content").val("");
 	}
 	
 	$("#commentSend").click(sendComment);
