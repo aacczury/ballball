@@ -169,7 +169,7 @@
 <script>
 	var commentCount = <%= comments.length | 0 %>;
 	
-	var socket = io.connect('http://localhost');
+	var socket = io.connect('http://nodejs-aczry.rhcloud.com/');
 	
 	$("#commentSend").click(function(){
 		var addComment = {};
