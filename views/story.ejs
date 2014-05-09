@@ -142,11 +142,9 @@
 						<div class="card">
 							<h2 class="card-heading simple">喊價</h2>
 							<div class="card-body">
-								<form id="entercomment">
-									<input id="nickname" type="text" placeholder="Nickname" name="nickname">
-									<input id="content" type="text" placeholder="Content" name="content">
-									<button id="commentSend" type="submit" class="btn">Send</button>
-								</form>
+								<input id="nickname" class="entercomment" type="text" placeholder="Nickname" name="nickname">
+								<input id="content" class="entercomment" type="text" placeholder="Content" name="content">
+								<button id="commentSend" type="submit" class="btn">Send</button>
 							</div>
 						</div><!--card-->
 					</div><!--/span-->
@@ -183,7 +181,7 @@
 	}
 	
 	$("#commentSend").click(sendComment);
-	$('#entercomment').on('keyup', '.getInput', function(e){
+	$('body').on('keyup', '.entercomment', function(e){
 		if(e.keyCode == '13'){
 			sendComment();
 		}
