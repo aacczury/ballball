@@ -71,7 +71,7 @@
 						%>
 							<div class="card-media" style="background-color:#F5F5F5;margin:16px;">
 								<a class="card-media-container" id="imglink" href="uploads/fullsize/<%= images[n].name %>" target="_blank">
-									<img id="imgfull" style="display: block;margin:auto;height:600px" src="uploads/fullsize/<%= images[n].name %>" alt="media"/>
+									<img id="imgfull" style="display: block;margin:auto;max-width: 100%; height: auto;" src="uploads/fullsize/<%= images[n].name %>" alt="media"/>
 								</a>
 							</div>
 							<div class="card-body">
@@ -99,9 +99,9 @@
 							<% var j = 0; %>
 							<% if( typeof inputs !== 'undefined' && inputs.length > j && inputs[j].num == 0 ){
 								%>
-								<div class="alert  alert-info" style="margin-top:8px;"><%= inputs[j].text %></div>
+								<div class="alert  alert-info" style="margin-bottom:-5px;"><%= inputs[j].text %></div>
 							<% j++; }else{ %>
-							<div class="getInput" style="height:22px;">
+							<div class="getInput" style="height:15px;">
 								<input type="text" alt="0" style="display:none;background-color:rgba(0,0,0,0.0);border:0px;margin:-3px 0 3px 0;">
 							</div>
 							<% } %>
@@ -109,26 +109,22 @@
 						%>
 							<% for(var i = 0; i < comments.length; ++ i ){ %>
 							<div class="card">
-								<div class="card-heading image">
+								<div class="card-heading image" style="padding-bottom:10px">
+									<button class="btn pull-right">+1</button>
 									<img class="floor" id="<%= comments[i]._id %>" src="holder.js/46x46/<% if(comments[i].point){ %>lava<% }else{ %>sky<% } %>/text:<%= i+1 %>" alt="<%= i+1 %>"/>
 									<div class="card-heading-header">
-										<h3><%= comments[i].nickname %></h3>
-									<span><%= comments[i]._id.getTimestamp() %></span>
+										<span style="font-size:15px;color:black;"><%= comments[i].nickname %></span>
+										<span><%= comments[i].content %></span><br/>
+										<% var d = new Date(comments[i]._id.getTimestamp()) %>
+										<span><%= d.getFullYear() + "/" + d.getMonth() + "/" + d.getDate() + " " + d.toLocaleTimeString() %></span>
 									</div>
-									<div class="card-body">
-										<p><%= comments[i].content %></p>
-									</div>
-								</div>
-								<div class="card-actions">
-									<button class="btn">+1</button>
-									<button class="btn">Share</button>
 								</div>
 							</div><!--card-->
 							<% if( typeof inputs !== 'undefined' && inputs.length > j && inputs[j].num == i + 1 ){ 
 								%>
-							<div class="alert  alert-info" style="margin-top:8px;"><%= inputs[j].text %></div>
+							<div class="alert  alert-info" style="margin:-15px 0 -2px 0"><%= inputs[j].text %></div>
 							<% j++; }else{ %>
-							<div class="getInput" style="height:20px;margin-top:-15px">
+							<div class="getInput" style="height:10px;margin:-23px 0 -10px 0">
 								<input type="text" alt="<%= i+1 %>" style="display:none;background-color:rgba(0,0,0,0.0);border:0px;margin:-3px 0 3px 0;">
 							</div>
 							<% } %>
@@ -189,7 +185,7 @@
 	
 	socket.on('newComment', function (comment) {
 		commentCount ++;
-		$("#commentHeight").append(
+		/*$("#commentHeight").append(
 			"<div class=\"card\">" +
 				"<div class=\"card-heading image\">" +
 					"<img class=\"floor\" id=\""+ comment.id +"\" src=\"holder.js/46x46/sky/text:"+ commentCount +"\" alt=\""+ commentCount +"\"/>" +
@@ -206,7 +202,22 @@
 					"<button class=\"btn\">Share</button>" +
 				"</div>" +
 			"</div>"
+		);*/
+		var d = new Date(comment.time);
+		$("#commentHeight").append(
+			"<div class=\"card\">" +
+				"<div class=\"card-heading image\" style=\"padding-bottom:10px\">" +
+					"<button class=\"btn pull-right\">+1</button>" +
+					"<img class=\"floor\" id="+ comment.id +" src=\"holder.js/46x46/sky/text:"+ commentCount +"\" alt=\""+ commentCount +"\"/>" +
+					"<div class=\"card-heading-header\">" +
+						"<span style=\"font-size:15px;color:black;\">"+ comment.name +"</span>" +
+						"<span>"+ comment.content +"</span><br/>" +
+						"<span>" + d.getFullYear() + "/" + d.getMonth() + "/" + d.getDate() + " " + d.toLocaleTimeString() + "</span>" +
+					"</div>" +
+				"</div>" +
+			"</div>"
 		);
+							
 		Holder.run();
 		$('#allcomment').animate({
 			scrollTop: $('#commentHeight').height()

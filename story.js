@@ -10,10 +10,10 @@ module.exports = function(io){
 	return {
 		findAll : function(req, res) {
 			db.collection('comments').find().toArray(function(err, comments) {
-				console.log(comments);
+				//console.log(comments);
 				db.collection('images').find().toArray(function(err, images){
 					db.collection('inputs').find().sort({'num':1}).toArray(function(err, inputs){
-						console.log(inputs);
+						console.log("inputs: " + inputs);
 						res.render('story', { comments: comments, images: images, inputs: inputs });
 					});
 				});
@@ -22,9 +22,12 @@ module.exports = function(io){
 
 		findOne : function(req, res) {
 			db.collection('comments').find().toArray(function(err, comments) {
-				console.log(comments);
+				//console.log(comments);
 				db.collection('images').find().toArray(function(err, images){
-					res.render('story', { comments: comments, images: images, imageN: req.params.id });
+					db.collection('inputs').find().sort({'num':1}).toArray(function(err, inputs){
+						console.log("inputs: " + inputs);
+						res.render('story', { comments: comments, images: images, inputs: inputs });
+					});
 				});
 			});
 		},
