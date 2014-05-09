@@ -57,7 +57,10 @@
 							<% var n = typeof imageN !== 'undefined' ? imageN : images.length - 1; 
 							%>
 							<% for(var i = 0; i < images.length; ++ i ){ %>
-								<li <% if(i == n){ %>class="active"<% } %>><a href="<%= i %>"><img style="height:100px;display: block;margin:auto;" src="uploads/thumbs/<%= images[i].name %>" /></a></li>
+								<li <% if(i == n){ %>class="active"<% } %>>
+									<button class="close" type="button" style="width:10px"></button>
+									<a href="<%= i %>"><img style="height:100px;display: block;margin:auto;" src="uploads/thumbs/<%= images[i].name %>" /></a>
+								</li>
 							<% } %>
 						</ul>
 					</div>
@@ -92,25 +95,43 @@
 				<div class="row-fluid">
 					<div id="allcomment" class="span11" >
 						<div id="commentHeight">
+							<% var j = 0; %>
+							<% if( typeof inputs !== 'undefined' && inputs.length > j && inputs[j].num == 0 ){
+								%>
+								<div class=\"alert  alert-info\" style=\"margin-top:8px;\"><%= inputs[j].text %></div>
+							<% j++; }else{ %>
+							<div class="getInput" style="height:22px;">
+								<input type="text" alt="0" style="display:none;background-color:rgba(0,0,0,0.0);border:0px;margin:-3px 0 3px 0;">
+							</div>
+							<% } %>
 						<% if (typeof comments !== 'undefined'){ 
-							for(var i = 0; i < comments.length; ++ i ){ %>
-						<div class="card">
-							<div class="card-heading image">
-								<img src="holder.js/46x46/sky/text:<%= i+1 %>" alt="sky"/>
-								<div class="card-heading-header">
-									<h3><%= comments[i].nickname %></h3>
-								<span><%= comments[i]._id.getTimestamp() %></span>
+						%>
+							<% for(var i = 0; i < comments.length; ++ i ){ %>
+							<div class="card">
+								<div class="card-heading image">
+									<img class="floor" id="<%= comments[i]._id %>" src="holder.js/46x46/<% if(comments[i].point){ %>lava<% }else{ %>sky<% } %>/text:<%= i+1 %>" alt="<%= i+1 %>"/>
+									<div class="card-heading-header">
+										<h3><%= comments[i].nickname %></h3>
+									<span><%= comments[i]._id.getTimestamp() %></span>
+									</div>
+									<div class="card-body">
+										<p><%= comments[i].content %></p>
+									</div>
 								</div>
-								<div class="card-body">
-									<p><%= comments[i].content %></p>
+								<div class="card-actions">
+									<button class="btn">+1</button>
+									<button class="btn">Share</button>
 								</div>
+							</div><!--card-->
+							<% if( typeof inputs !== 'undefined' && inputs.length > j && inputs[j].num == i ){ 
+								%>
+							<div class="alert  alert-info" style="margin-top:8px;"><%= inputs[j].text %></div>
+							<% j++; }else{ %>
+							<div class="getInput" style="height:20px;margin-top:-15px">
+								<input type="text" alt="<%= i+1 %>" style="display:none;background-color:rgba(0,0,0,0.0);border:0px;margin:-3px 0 3px 0;">
 							</div>
-							<div class="card-actions">
-								<button class="btn">+1</button>
-								<button class="btn">Share</button>
-							</div>
-						</div><!--card-->
-						<% }
+							<% } %>
+							<% }
 						}; %>
 						</div>
 					</div>
@@ -120,11 +141,11 @@
 						<div class="card">
 							<h2 class="card-heading simple">喊價</h2>
 							<div class="card-body">
-								<form action="/comment" method="post">
-									<input type="text" placeholder="Nickname" name="nickname">
-									<input type="text" placeholder="Content" name="content">
-									<button type="submit" class="btn">Send</button>
-								</form>
+								<!--<form action="/comment" method="post">-->
+									<input id="nickname" type="text" placeholder="Nickname" name="nickname">
+									<input id="content" type="text" placeholder="Content" name="content">
+									<button id="commentSend" type="submit" class="btn">Send</button>
+								<!--</form>-->
 							</div>
 						</div><!--card-->
 					</div><!--/span-->
@@ -141,15 +162,109 @@
 	</div><!--/.fluid-container-->
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
 <script src="javascripts/bootstrap.min.js"></script>
 <script src="javascripts/holder.js"></script>
 <script src="javascripts/perfect-scrollbar-0.4.10.with-mousewheel.min.js"></script>
 <script>
-  $(function(){
-	$('#allimg').perfectScrollbar();
-	$('#allcomment').perfectScrollbar();
-	$('#allcomment').scrollTop($('#commentHeight').height());
-  });
+	var commentCount = <%= comments.length | 0 %>;
+	
+	var socket = io.connect('http://localhost');
+	
+	$("#commentSend").click(function(){
+		var addComment = {};
+		addComment.nickname = $("#nickname").val();
+		addComment.content = $("#content").val();
+		socket.emit('addComment', addComment);
+	});
+	
+	socket.on('newComment', function (comment) {
+		commentCount ++;
+		$("#commentHeight").append(
+			"<div class=\"card\">" +
+				"<div class=\"card-heading image\">" +
+					"<img class=\"floor\" id=\""+ comment.id +"\" src=\"holder.js/46x46/sky/text:"+ commentCount +"\" alt=\""+ commentCount +"\"/>" +
+					"<div class=\"card-heading-header\">"+
+						"<h3>"+ comment.name +"</h3>"+
+					"<span>"+ new Date(comment.time) +"</span>" +
+					"</div>" +
+					"<div class=\"card-body\">" +
+						"<p>"+ comment.content +"</p>" +
+					"</div>" +
+				"</div>" +
+				"<div class=\"card-actions\">" +
+					"<button class=\"btn\">+1</button>" +
+					"<button class=\"btn\">Share</button>" +
+				"</div>" +
+			"</div>"
+		);
+		Holder.run();
+		$('#allcomment').animate({
+			scrollTop: $('#commentHeight').height()
+		}, 500);
+	});
+	
+	$('#commentHeight').on('click', '.floor', function(event){
+		var pc = {
+			id : $(this).attr('id'),
+			point : $(this).attr('data-src').split("/")[2] == "sky" ? true : false
+		}
+		socket.emit('pointComment', pc);
+	});
+	
+	socket.on('setComment', function(pc){
+		var id = "#" + pc.id;
+		$(id).attr('data-src', "holder.js/46x46/"+ ( pc.point ? "lava" : "sky" ) +"/text:"+ $(id).attr('alt'));
+		Holder.run();
+	});
+	
+	$('#commentHeight').on('click', '.getInput', function(event){
+		$(this).children().css("display", "").focus().focusout(function(){
+			$(this).val("");
+			$(this).css("display", "none");
+		});
+	});
+	
+	$('#commentHeight').on('keyup', '.getInput', function(e){
+		if(e.keyCode == '13'){
+			var iv = {
+				num : $(this).children().attr("alt"),
+				text : $(this).children().val()
+			}
+			socket.emit('postInput', iv);
+		}
+	});
+	
+	socket.on('getInput', function(iv){
+		var d = $(".getInput").find("[alt='"+ iv.num +"']");
+		d.parent().after(
+			"<div class=\"alert  alert-info\" style=\"margin-top:8px;\">" + iv.text + "</div>"
+		)
+		d.parent().remove();
+	});
+	
+	
+	$(function(){
+		$('#allimg').perfectScrollbar();
+		$('#allcomment').perfectScrollbar();
+		$('#allcomment').scrollTop($('#commentHeight').height());
+		/*
+		$('#signup input[type="submit"]').click(function(e){                            
+			e.preventDefault();  
+			var user = {};  
+			user.username = $("#username").val();  
+			user.email = $("#email").val();  
+			$.post("/Signup",user,function(data){  
+				greet(data)                               
+			});  
+		});  
+				 
+		var greet = function(msg){
+			$('#signup').html("");  
+			var greeting = $('<h2>Hi,'+msg.username+',你的會員id是:'+ msg.id +'我們會將會員啟動信寄至'+msg.email+'</h2>');  
+			$('#signup').append(greeting);  
+		};*/
+	});
 </script>
 </body>
 </html>

@@ -4,7 +4,6 @@
  */
 
 var express = require('express');
-var story = require('./story.js');
 var http = require('http');
 var path = require('path');
 
@@ -32,11 +31,25 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
+var server = http.createServer(app);
+var io = require('socket.io').listen(server);
+
+var story = require('./story.js')(io);
+
 app.get('/', story.findAll);
 app.get('/:id', story.findOne);
 app.post('/comment', story.addComment);
 app.post('/upload', story.upload);
 
-http.createServer(app).listen(app.get('port'), app.get('ipaddress'), function(){
+server.listen(app.get('port'), app.get('ipaddress'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
+
+io.sockets.on('connection', function (socket) {
+	so = socket;
+	var comment;
+	socket.on('addComment', story.socketComment);
+	socket.on('pointComment', story.pointComment);
+	socket.on('postInput', story.postInput);
+});
+
