@@ -19,7 +19,7 @@ app.configure(function () {
 			host: 'localhost',
 			port: 27017,
 			db: 'story',
-			collection: 'sessions'
+			collection: 'sessions',
 			url : process.env.OPENSHIFT_MONGODB_DB_URL + 'nodejs/sessions'
 		})
 	}));
