@@ -16,10 +16,10 @@ app.configure(function () {
 	app.use(express.session({
 		secret: "=911#e4)ad@849e+c21{35/4c*ee4[21$d8!b2}d_69790&350(8]",
 		store: sessiondb = new MongoStore({
-			host: process.env.OPENSHIFT_MONGODB_DB_URL || 'localhost',
+			//host: 'localhost',
 			//port: 27017,
 			//db: 'story',
-			db: 'nodejs',
+			db: process.env.OPENSHIFT_MONGODB_DB_URL + 'nodejs',
 			collection: 'sessions'
 		})
 	}));
