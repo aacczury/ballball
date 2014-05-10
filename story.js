@@ -153,8 +153,7 @@ module.exports = function(io){
 				db.collection('inputs').insert(req.body, function(err, result){
 					if(!err){
 						console.log(result);
-						console.log("Input num: " + JSON.stringify(result[0]));
-						io.sockets.emit('getInput' + result[0].article_id, result[0]);
+						io.sockets.emit('getInput' + req.params.id, result[0]);
 					}
 				});
 			}

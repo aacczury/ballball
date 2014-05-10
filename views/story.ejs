@@ -270,11 +270,18 @@
 	});
 	
 	socket.on('getInput<%= reqid %>', function(iv){
+		<% if(auth){ %>
 		var d = $(".getInput").find("[alt='"+ iv.num +"']");
-		d.parent().after(
-			"<div class=\"alert  alert-info\" style=\"margin:-2px 0 0 0\">" + iv.text + "</div>"
-		)
+		d.parent().after("<div class=\"alert  alert-info\" style=\"margin:-2px 0 0 0\">" + iv.text + "</div>");
 		d.parent().remove();
+		<% } else { %>
+		var d = $(".card").find("[alt='"+ iv.num +"']").parent().parent().parent();
+		if(d.length > 0 )
+			if( iv.num == 0 ) d.before("<div class=\"alert  alert-info\" style=\"margin:-2px 0 0 0\">" + iv.text + "</div>");
+			else d.after("<div class=\"alert  alert-info\" style=\"margin:-2px 0 0 0\">" + iv.text + "</div>");
+		else
+			$('#commentHeight').append("<div class=\"alert  alert-info\" style=\"margin:-2px 0 0 0\">" + iv.text + "</div>");
+		<% } %>
 	});
 	
 	socket.on('getImage<%= reqid %>', function(imginfo){
