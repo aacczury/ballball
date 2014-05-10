@@ -1,13 +1,34 @@
-var db = require('mongoskin').MongoClient.connect(process.env.OPENSHIFT_MONGODB_DB_URL + "nodejs");
-console.log(process.env.OPENSHIFT_MONGODB_DB_URL + "story");
+/*var db = require('mongoskin').MongoClient.connect(process.env.OPENSHIFT_MONGODB_DB_URL + "nodejs");
+console.log(process.env.OPENSHIFT_MONGODB_DB_URL + "story");*/
 
-//var db = require('mongoskin').MongoClient.connect("mongodb://localhost:27017/story");
+var db = require('mongoskin').MongoClient.connect("mongodb://localhost:27017/story");
 var fs = require('fs');
 var im = require('imagemagick');
 var crypto = require('crypto');
 
 module.exports = function(io){
 	return {
+		showAll : function(req, res){
+			db.collection('articles').find().sort({'_id':-1}).toArray(function(err, articles){
+				console.log("articles: " + JSON.stringify(articles[0]));
+				res.render('main', { articles: articles });
+			});
+		},
+		
+		addArticle : function(req, res){
+			var sha1 = crypto.createHash('sha1');
+			sha1.update(req.body.password);
+			var article = {
+				article : req.body.article,
+				nickname : req.body.nickname,
+				password : sha1.digest('hex')
+			}
+			db.collection('articles').insert(article, function(err, result){
+				console.log(result);
+				res.redirect('/');
+			});
+		},
+		
 		findAll : function(req, res) {
 			db.collection('comments').find().sort({'_id':1}).toArray(function(err, comments) {
 				//console.log(comments);

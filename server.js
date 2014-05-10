@@ -8,9 +8,21 @@ var http = require('http');
 var path = require('path');
 
 var app = express();
+var MongoStore = require('connect-mongo')(express);
 
 app.configure(function () {
-  app.use(express.bodyParser());
+	app.use(express.bodyParser());
+	app.use(express.cookieParser());
+	app.use(express.session({
+		secret: "=911#e4)ad@849e+c21{35/4c*ee4[21$d8!b2}d_69790&350(8]",
+		store: new MongoStore({
+			host: 'localhost',
+			port: 27017,
+			db: 'story',
+			//db: 'nodejs',
+			collection: 'sessions'
+		})
+	}));
 });
 
 // all environments
@@ -36,7 +48,9 @@ var io = require('socket.io').listen(server);
 
 var story = require('./story.js')(io);
 
-app.get('/', story.findAll);
+app.get('/', story.showAll);
+app.post('/article', story.addArticle);
+//app.get('/', story.findAll);
 app.get('/:id', story.findOne);
 app.post('/comment', story.addComment);
 app.post('/upload', story.upload);
