@@ -15,7 +15,7 @@ app.configure(function () {
 	app.use(express.cookieParser());
 	app.use(express.session({
 		secret: "=911#e4)ad@849e+c21{35/4c*ee4[21$d8!b2}d_69790&350(8]",
-		store: new MongoStore({
+		store: sessiondb = new MongoStore({
 			host: 'localhost',
 			port: 27017,
 			db: 'story',
@@ -50,20 +50,18 @@ var story = require('./story.js')(io);
 
 app.get('/', story.showAll);
 app.post('/article', story.addArticle);
-//app.get('/', story.findAll);
-app.get('/:id', story.findOne);
-app.post('/comment', story.addComment);
-app.post('/upload', story.upload);
+app.get('/articles/:id', story.showArticle);
+app.get('/articles/:id/:imgid', story.showArticleImage);
+app.post('/articles/:id/login', story.login);
+app.post('/articles/:id/upload', story.upload);
+app.post('/articles/:id/point', story.point);
+app.post('/articles/:id/outcry', story.outcry);
 
 server.listen(app.get('port'), app.get('ipaddress'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
 
 io.sockets.on('connection', function (socket) {
-	so = socket;
-	var comment;
 	socket.on('addComment', story.socketComment);
-	socket.on('pointComment', story.pointComment);
-	socket.on('postInput', story.postInput);
 });
 

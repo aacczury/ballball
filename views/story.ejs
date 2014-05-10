@@ -4,8 +4,8 @@
 	<meta charset="utf-8">
 	<link href='http://fonts.googleapis.com/css?family=Roboto:400,300,700' rel='stylesheet' type='text/css'>
 	<link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
-	<link rel="stylesheet" type="text/css" href="stylesheets/bootplus.min.css" />
-	<link rel="stylesheet" type="text/css" href="stylesheets/perfect-scrollbar-0.4.10.min.css" />
+	<link rel="stylesheet" type="text/css" href="/stylesheets/bootplus.min.css" />
+	<link rel="stylesheet" type="text/css" href="/stylesheets/perfect-scrollbar-0.4.10.min.css" />
 	<style type="text/css">
 		body {
 			padding: 60px 30px 40px 30px;
@@ -21,9 +21,9 @@
 		}
         #allimg { position:relative; margin:10px auto; padding:0px; height:600px; overflow: hidden; }
         #allcomment { position:relative; margin:10px auto 12px; padding:0px; height:682px; overflow: hidden; }
-		.floor{ cursor: pointer }
+		<% if(auth){ %>.floor{ cursor: pointer }<% } %>
 	</style>
-	<link rel="stylesheet" type="text/css" href="stylesheets/bootplus-responsive.min.css" />
+	<link rel="stylesheet" type="text/css" href="/stylesheets/bootplus-responsive.min.css" />
 </head>
 <body>
 	<div class="navbar navbar-inverse navbar-fixed-top">
@@ -60,7 +60,7 @@
 							<% for(var i = 0; i < images.length; ++ i ){ %>
 								<li <% if(i == n){ %>class="active"<% } %>>
 									<button class="close" type="button" style="width:10px"></button>
-									<a href="<%= i %>"><img style="height:100px;display: block;margin:auto;" src="uploads/thumbs/<%= images[i].name %>" /></a>
+									<a href="/articles/<%= reqid %>/<%= i %>"><img style="height:100px;display: block;margin:auto;" src="/uploads/thumbs/<%= images[i].name %>" /></a>
 								</li>
 							<% } %>
 						</ul>
@@ -70,8 +70,8 @@
 						<% if (typeof images !== 'undefined' && images.length > 0){ 
 						%>
 							<div class="card-media" style="background-color:#F5F5F5;margin:16px;">
-								<a class="card-media-container" id="imglink" href="uploads/fullsize/<%= images[n].name %>" target="_blank">
-									<img id="imgfull" style="display: block;margin:auto;max-width: 100%; height: auto;" src="uploads/fullsize/<%= images[n].name %>" alt="media"/>
+								<a class="card-media-container" id="imglink" href="/uploads/fullsize/<%= images[n].name %>" target="_blank">
+									<img id="imgfull" style="display: block;margin:auto;max-width: 100%; height: auto;" src="/uploads/fullsize/<%= images[n].name %>" alt="media"/>
 								</a>
 							</div>
 							<div class="card-body">
@@ -81,11 +81,24 @@
 						</div>
 						<div class="card">
 							<div class="card-body">
-								<form method='post' action='/upload' enctype='multipart/form-data'>
+								<% if(auth){ %>
+								<form method='post' action='/articles/<%= reqid %>/upload/' enctype='multipart/form-data'>
 									<input type='file' name='image'/><br/>
 									<textarea name="text" style="width:95%;" rows="3"></textarea><br/>
 									<button type="submit" class="btn btn-primary" data-loading-text="Sending...">Send</button>
 								</form>
+								<% }else{ %>
+								<% if(auth==false){ %>
+								<div class="alert alert-error">
+									<button type="button" class="close" data-dismiss="alert">&times;</button>
+									<strong>錯了!</strong> 換個密碼再試試看吧。
+								</div>
+								<% } %>
+								<form method='post' action='/articles/<%= reqid %>/login/'>
+									<input type='password' name='password' placeholder="Password">
+									<button style="margin-top:-10px" type="submit" class="btn btn-primary" data-loading-text="Sending...">Send</button>
+								</form>
+								<% } %>
 							</div>
 						</div>
 					</div>
@@ -100,19 +113,19 @@
 							<% if( typeof inputs !== 'undefined' && inputs.length > j && inputs[j].num == 0 ){
 								%>
 								<div class="alert  alert-info" style="margin-bottom:-5px;"><%= inputs[j].text %></div>
-							<% j++; }else{ %>
+							<% j++; }else if(auth){ %>
 							<div class="getInput" style="height:15px;">
-								<input type="text" alt="0" style="display:none;background-color:rgba(0,0,0,0.0);border:0px;margin:-3px 0 3px 0;">
+								<input type="text" alt="0" style="display:none;background-color:rgba(0,0,0,0.0);border:0px;margin:-5px 0 3px 0;">
 							</div>
 							<% } %>
 						<% if (typeof comments !== 'undefined'){ 
 						%>
 							<% for(var i = 0; i < comments.length; ++ i ){ %>
-							<div class="card">
+							<div class="card" style="margin: 5px 0">
 								<div class="card-heading image" style="padding-bottom:10px">
 									<button class="btn pull-right">+1</button>	
 									<div style="display:table-row">
-										<img style="display:table-cell" class="floor" id="<%= comments[i]._id %>" src="holder.js/46x46/<% if(comments[i].point){ %>lava<% }else{ %>sky<% } %>/text:<%= i+1 %>" alt="<%= i+1 %>"/>
+										<img style="display:table-cell" class="floor" id="<%= comments[i]._id %>" src="holder.js/46x46/<% if(comments[i].point == "true"){ %>lava<% }else{ %>sky<% } %>/text:<%= i+1 %>" alt="<%= i+1 %>"/>
 										<div style="display:table-cell" class="card-heading-header">
 											<span style="font-size:15px;color:black;"><%= comments[i].nickname %></span>
 											<% var d = new Date(comments[i]._id.getTimestamp()) %>
@@ -126,10 +139,10 @@
 							</div><!--card-->
 							<% if( typeof inputs !== 'undefined' && inputs.length > j && inputs[j].num == i + 1 ){ 
 								%>
-							<div class="alert  alert-info" style="margin:-15px 0 -2px 0"><%= inputs[j].text %></div>
-							<% j++; }else{ %>
-							<div class="getInput" style="height:10px;margin:-23px 0 -10px 0">
-								<input type="text" alt="<%= i+1 %>" style="display:none;background-color:rgba(0,0,0,0.0);border:0px;margin:-3px 0 3px 0;">
+							<div class="alert  alert-info" style="margin:-2px 0 0 0"><%= inputs[j].text %></div>
+							<% j++; }else if(auth){ %>
+							<div class="getInput" style="height:10px;margin:-7px 0 -8px 0">
+								<input type="text" alt="<%= i+1 %>" style="display:none;background-color:rgba(0,0,0,0.0);border:0px;margin:-5px 0 3px 0;">
 							</div>
 							<% } %>
 							<% }
@@ -162,9 +175,9 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
-<script src="javascripts/bootstrap.min.js"></script>
-<script src="javascripts/holder.js"></script>
-<script src="javascripts/perfect-scrollbar-0.4.10.with-mousewheel.min.js"></script>
+<script src="/javascripts/bootstrap.min.js"></script>
+<script src="/javascripts/holder.js"></script>
+<script src="/javascripts/perfect-scrollbar-0.4.10.with-mousewheel.min.js"></script>
 <script>
 	var commentCount = <%= comments.length | 0 %>;
 	var imgCount = <%= images.length | 0 %>;
@@ -178,13 +191,16 @@
 		else if($("#content").val() == "" )
 			$("#content").focus();
 		else{
-			var addComment = {};
-			addComment.nickname = $("#nickname").val();
-			addComment.content = $("#content").val();
+			var addComment = {
+				article_id : "<%= reqid %>",
+				nickname : $("#nickname").val(),
+				content : $("#content").val()
+			};
 			socket.emit('addComment', addComment);
 			$("#content").val("");
 		}
 	}
+	
 	
 	$("#commentSend").click(sendComment);
 	$('body').on('keyup', '.entercomment', function(e){
@@ -193,11 +209,11 @@
 		}
 	});
 	
-	socket.on('newComment', function (comment) {
+	socket.on('newComment<%= reqid %>', function (comment) {
 		commentCount ++;
 		var d = new Date(comment.time);
 		$("#commentHeight").append(
-			"<div class=\"card\">" +
+			"<div class=\"card\" style=\"margin: 5px 0\">" +
 				"<div class=\"card-heading image\" style=\"padding-bottom:10px\">" +
 					"<button class=\"btn pull-right\">+1</button>" +
 					"<div style=\"display:table-row\">" +
@@ -205,7 +221,7 @@
 						"<div style=\"display:table-cell\" class=\"card-heading-header\">" +
 							"<span style=\"font-size:15px;color:black;\">"+ comment.name +"</span>" +
 							"<span>" + d.getFullYear() + "/" + d.getMonth() + "/" + d.getDate() + " " + d.toLocaleTimeString() + "</span>" +
-							"<p style=\"word-break:break-all\">"+ comment.content +"</p><br/>" +
+							"<p style=\"word-break:break-all\">"+ comment.content +"</p>" +
 						"</div>" +
 					"</div>" +
 				"</div>" +
@@ -218,20 +234,16 @@
 		}, 500);
 	});
 	
+	<% if(auth){ %>
 	$('#commentHeight').on('click', '.floor', function(event){
 		var pc = {
+			article_id : "<%= reqid %>",
 			id : $(this).attr('id'),
 			point : $(this).attr('data-src').split("/")[2] == "sky" ? true : false
 		}
-		socket.emit('pointComment', pc);
+		$.post("/articles/<%= reqid %>/point", pc);
 	});
-	
-	socket.on('setComment', function(pc){
-		var id = "#" + pc.id;
-		$(id).attr('data-src', "holder.js/46x46/"+ ( pc.point ? "lava" : "sky" ) +"/text:"+ $(id).attr('alt'));
-		Holder.run();
-	});
-	
+
 	$('#commentHeight').on('click', '.getInput', function(event){
 		$(this).children().css("display", "").focus().focusout(function(){
 			$(this).val("");
@@ -242,35 +254,43 @@
 	$('#commentHeight').on('keyup', '.getInput', function(e){
 		if(e.keyCode == '13'){
 			var iv = {
+				article_id : "<%= reqid %>",
 				num : parseInt($(this).children().attr("alt")),
 				text : $(this).children().val()
 			}
-			socket.emit('postInput', iv);
+			$.post("/articles/<%= reqid %>/outcry", iv);
 		}
 	});
+	<% } %>
 	
-	socket.on('getInput', function(iv){
+	socket.on('setComment<%= reqid %>', function(pc){
+		var id = "#" + pc.id;
+		$(id).attr('data-src', "holder.js/46x46/"+ ( pc.point == "true" ? "lava" : "sky" ) +"/text:"+ $(id).attr('alt'));
+		Holder.run();
+	});
+	
+	socket.on('getInput<%= reqid %>', function(iv){
 		var d = $(".getInput").find("[alt='"+ iv.num +"']");
 		d.parent().after(
-			"<div class=\"alert  alert-info\" style=\"margin-top:8px;\">" + iv.text + "</div>"
+			"<div class=\"alert  alert-info\" style=\"margin:-2px 0 0 0\">" + iv.text + "</div>"
 		)
 		d.parent().remove();
 	});
 	
-	socket.on('getImage', function(imginfo){
+	socket.on('getImage<%= reqid %>', function(imginfo){
 		d = new Date();
 		$("#imglist").find("[class='active']").attr("class", "");
 		$("#imglist").append(
 			"<li class=\"active\">" +
 				"<button class=\"close\" type=\"button\" style=\"width:10px\"></button>" +
-				"<a href=\""+ imgCount + "\"><img style=\"height:100px;display: block;margin:auto;\" src=\"uploads/thumbs/" + imginfo.name + "\" /></a>" +
+				"<a href=\"/articles/<%= reqid %>/"+ imgCount + "\"><img style=\"height:100px;display: block;margin:auto;\" src=\"/uploads/thumbs/" + imginfo.name + "\" /></a>" +
 			"</li>"
 		)
 		$('#allimg').animate({
 			scrollTop: $('#imglist').height()
 		}, 500);
-		$("#imglink").attr("href", "uploads/fullsize/" + imginfo.name);
-		$("#imgfull").attr("src", "uploads/fullsize/" + imginfo.name);
+		$("#imglink").attr("href", "/uploads/fullsize/" + imginfo.name);
+		$("#imgfull").attr("src", "/uploads/fullsize/" + imginfo.name);
 		$("#imgtext").html(imginfo.text);
 		imgCount ++;
 	});
@@ -280,26 +300,10 @@
 		$('#allimg').perfectScrollbar();
 		$('#allcomment').perfectScrollbar();
 		$('#allcomment').scrollTop($('#commentHeight').height());
-		if(location.pathname.split("/")[1] == "")
+		if(location.pathname.split("/")[3] == null)
 			$('#allimg').scrollTop($('#imglist').height());
 		else
-			$('#allimg').scrollTop($('#imglist').children().height()*(parseInt(location.pathname.split("/")[1])-1));
-		/*
-		$('#signup input[type="submit"]').click(function(e){                            
-			e.preventDefault();  
-			var user = {};  
-			user.username = $("#username").val();  
-			user.email = $("#email").val();  
-			$.post("/Signup",user,function(data){  
-				greet(data)                               
-			});  
-		});  
-				 
-		var greet = function(msg){
-			$('#signup').html("");  
-			var greeting = $('<h2>Hi,'+msg.username+',你的會員id是:'+ msg.id +'我們會將會員啟動信寄至'+msg.email+'</h2>');  
-			$('#signup').append(greeting);  
-		};*/
+			$('#allimg').scrollTop($('#imglist').children().height()*(parseInt(location.pathname.split("/")[3])-1));
 	});
 </script>
 </body>
