@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<link href='http://fonts.googleapis.com/css?family=Roboto:400,300,700' rel='stylesheet' type='text/css'>
+	<link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="stylesheets/bootplus.min.css" />
+	<link rel="stylesheet" type="text/css" href="stylesheets/perfect-scrollbar-0.4.10.min.css" />
+	<style type="text/css">
+		body {
+			padding: 60px 30px 40px 30px;
+			margin: auto;
+		}
+		@media (max-width: 980px) {
+			/* Enable use of floated navbar text */
+			.navbar-text.pull-right {
+			  float: none;
+			  padding-left: 5px;
+			  padding-right: 5px;
+			}
+		}
+	</style>
+	<link rel="stylesheet" type="text/css" href="stylesheets/bootplus-responsive.min.css" />
+</head>
+<body>
+	<div class="navbar navbar-inverse navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container-fluid">
+				<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="brand" href="">胖宅の安價</a>
+				<div class="nav-collapse collapse">
+					<p class="navbar-text pull-right">
+						Logged in as <a href="#" class="navbar-link">Username</a>
+					</p>
+					<ul class="nav">
+						<li class="active"><a href="/">Home</a></li>
+						<li><a href="#about">About</a></li>
+						<li><a href="#contact">Contact</a></li>
+					</ul>
+				</div><!--/.nav-collapse -->
+			</div>
+		</div>
+	</div>
+
+	<div class="container-fluid" style="height:100%;">
+		<div class="row-fluid">
+			<div class="span6 offset3">
+				<div class="card">
+					<h2 class="card-heading simple">安價</h2>
+					<div class="card-body">
+						<form action="/article" method="post">
+						<input id="article" type="text" placeholder="Article" name="article" required>
+						<input id="nickname" type="text" placeholder="Nickname" name="nickname" required>
+						<input id="password" type="password" placeholder="Password" name="password" required>
+						<button style="margin-top:-10px" id="articleSend" type="submit" class="btn">Send</button>
+						</form>
+					</div>
+				</div><!--card-->
+				<ul class="nav nav-list" id="imglist">
+				<% articles.forEach( function(article){ %>
+				<li>
+					<a href="/articles/<%= article._id %>">
+						<h3><%= article.article %></h3>
+						<p class="text-success"><%= article.nickname %></p>
+					</a>
+				</li><!--card-->
+				<% }); %>
+				</ul>
+			</div><!--/span-->
+		</div><!--/row-->
+
+		<hr>
+
+		<footer>
+			<p>&copy; Ballball 2014</p>
+		</footer>
+
+	</div><!--/.fluid-container-->
+	
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+</body>
+</html>
