@@ -19,8 +19,8 @@
 			  padding-right: 5px;
 			}
 		}
-        #allimg { position:relative; margin:10px auto; padding:0px; height:400px; overflow: hidden; }
-        #allcomment { position:relative; margin:0px auto 12px; padding:0px; height:698px; overflow: hidden; }
+        #allimg { position:relative; margin:10px auto; padding:0px; height:600px; overflow: hidden; }
+        #allcomment { position:relative; margin:10px auto 12px; padding:0px; height:682px; overflow: hidden; }
 		.floor{ cursor: pointer }
 	</style>
 	<link rel="stylesheet" type="text/css" href="stylesheets/bootplus-responsive.min.css" />
@@ -142,8 +142,8 @@
 						<div class="card">
 							<h2 class="card-heading simple">喊價</h2>
 							<div class="card-body">
-								<input id="nickname" class="entercomment" type="text" placeholder="Nickname" name="nickname">
-								<input id="content" class="entercomment" type="text" placeholder="Content" name="content">
+								<input id="nickname" class="entercomment" type="text" placeholder="Nickname" name="nickname" required>
+								<input id="content" class="entercomment" type="text" placeholder="Content" name="content" required>
 								<button id="commentSend" type="submit" class="btn">Send</button>
 							</div>
 						</div><!--card-->
@@ -173,11 +173,17 @@
 	//var socket = io.connect('http://127.0.0.1');
 	
 	function sendComment(){
-		var addComment = {};
-		addComment.nickname = $("#nickname").val();
-		addComment.content = $("#content").val();
-		socket.emit('addComment', addComment);
-		$("#content").val("");
+		if( $("#nickname").val() == "" )
+			$("#nickname").focus();
+		else if($("#content").val() == "" )
+			$("#content").focus();
+		else{
+			var addComment = {};
+			addComment.nickname = $("#nickname").val();
+			addComment.content = $("#content").val();
+			socket.emit('addComment', addComment);
+			$("#content").val("");
+		}
 	}
 	
 	$("#commentSend").click(sendComment);
@@ -274,7 +280,10 @@
 		$('#allimg').perfectScrollbar();
 		$('#allcomment').perfectScrollbar();
 		$('#allcomment').scrollTop($('#commentHeight').height());
-		$('#allimg').scrollTop($('#imglist').height());
+		if(location.pathname.split("/")[1] == "")
+			$('#allimg').scrollTop($('#imglist').height());
+		else
+			$('#allimg').scrollTop($('#imglist').children().height()*(parseInt(location.pathname.split("/")[1])-1));
 		/*
 		$('#signup input[type="submit"]').click(function(e){                            
 			e.preventDefault();  
