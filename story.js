@@ -1,7 +1,7 @@
-/*var db = require('mongoskin').MongoClient.connect(process.env.OPENSHIFT_MONGODB_DB_URL + "nodejs");
-console.log(process.env.OPENSHIFT_MONGODB_DB_URL + "story");*/
+var db = require('mongoskin').MongoClient.connect(process.env.OPENSHIFT_MONGODB_DB_URL + "nodejs");
+console.log(process.env.OPENSHIFT_MONGODB_DB_URL + "story");
 
-var db = require('mongoskin').MongoClient.connect("mongodb://localhost:27017/story");
+//var db = require('mongoskin').MongoClient.connect("mongodb://localhost:27017/story");
 var fs = require('fs');
 var im = require('imagemagick');
 var crypto = require('crypto');

@@ -182,8 +182,8 @@
 	var commentCount = <%= comments.length | 0 %>;
 	var imgCount = <%= images.length | 0 %>;
 	
-	//var socket = io.connect('http://nodejs-aczry.rhcloud.com/');
-	var socket = io.connect('http://127.0.0.1');
+	var socket = io.connect('http://nodejs-aczry.rhcloud.com/');
+	//var socket = io.connect('http://127.0.0.1');
 	
 	function sendComment(){
 		if( $("#nickname").val() == "" )
