@@ -36,13 +36,11 @@
 				</button>
 				<a class="brand" href="/">胖宅の安價</a>
 				<div class="nav-collapse collapse">
-					<p class="navbar-text pull-right">
+					<!--<p class="navbar-text pull-right">
 						Logged in as <a href="#" class="navbar-link">Username</a>
-					</p>
+					</p>-->
 					<ul class="nav">
 						<li class="active"><a href="/">Home</a></li>
-						<li><a href="#about">About</a></li>
-						<li><a href="#contact">Contact</a></li>
 					</ul>
 				</div><!--/.nav-collapse -->
 			</div>
@@ -66,9 +64,8 @@
 						</ul>
 					</div>
 					<div class="span10" >
-						<div class="card">
-						<% if (typeof images !== 'undefined' && images.length > 0){ 
-						%>
+						<div id="imgmain" class="card">
+						<% if (images.length > 0){ %>
 							<div class="card-media" style="background-color:#F5F5F5;margin:16px;">
 								<a class="card-media-container" id="imglink" href="/uploads/fullsize/<%= images[n].name %>" target="_blank">
 									<img id="imgfull" style="display: block;margin:auto;max-width: 100%; height: auto;" src="/uploads/fullsize/<%= images[n].name %>" alt="media"/>
@@ -109,23 +106,21 @@
 				<div class="row-fluid">
 					<div id="allcomment" class="span11" >
 						<div id="commentHeight">
-							<% var j = 0; %>
-							<% if( typeof inputs !== 'undefined' && inputs.length > j && inputs[j].num == 0 ){
-								%>
-								<div class="alert  alert-info" style="margin-bottom:-5px;"><%= inputs[j].text %></div>
-							<% j++; }else if(auth){ %>
-							<div class="getInput" style="height:15px;">
+							<% if( inputs[0] ) inputs[0].forEach( function(input){ %>
+								<div class="alert  alert-info" style="margin:2px 0;"><%= input.text %></div>
+							<% }); else if(auth){ %>
+							<div class="getInput" style="height:10px;margin:-7px 0 -8px 0">
 								<input type="text" alt="0" style="display:none;background-color:rgba(0,0,0,0.0);border:0px;margin:-5px 0 3px 0;">
 							</div>
 							<% } %>
 						<% if (typeof comments !== 'undefined'){ 
 						%>
 							<% for(var i = 0; i < comments.length; ++ i ){ %>
-							<div class="card" style="margin: 5px 0">
+							<div id="<%= comments[i]._id %>" alt="<%= i+1 %>" class="card comment" style="margin: 5px 0">
 								<div class="card-heading image" style="padding-bottom:10px">
-									<button class="btn pull-right">+1</button>	
+									<button class="btn <% if( plus[comments[i]._id] ){ %>btn-danger <% } %>pull-right plus">+<%= comments[i].plus %></button>	
 									<div style="display:table-row">
-										<img style="display:table-cell" class="floor" id="<%= comments[i]._id %>" src="holder.js/46x46/<% if(comments[i].point == "true"){ %>lava<% }else{ %>sky<% } %>/text:<%= i+1 %>" alt="<%= i+1 %>"/>
+										<img style="display:table-cell" class="floor" src="holder.js/46x46/<% if(comments[i].point == "true"){ %>lava<% }else{ %>sky<% } %>/text:<%= i+1 %>"/>
 										<div style="display:table-cell" class="card-heading-header">
 											<span style="font-size:15px;color:black;"><%= comments[i].nickname %></span>
 											<% var d = new Date(comments[i]._id.getTimestamp()) %>
@@ -137,10 +132,9 @@
 									</div>
 								</div>
 							</div><!--card-->
-							<% if( typeof inputs !== 'undefined' && inputs.length > j && inputs[j].num == i + 1 ){ 
-								%>
-							<div class="alert  alert-info" style="margin:-2px 0 0 0"><%= inputs[j].text %></div>
-							<% j++; }else if(auth){ %>
+							<% if( inputs[i+1] ) inputs[i+1].forEach( function(input){ %>
+							<div class="alert  alert-info" style="margin:2px 0"><%= input.text %></div>
+							<% }); else if(auth){ %>
 							<div class="getInput" style="height:10px;margin:-7px 0 -8px 0">
 								<input type="text" alt="<%= i+1 %>" style="display:none;background-color:rgba(0,0,0,0.0);border:0px;margin:-5px 0 3px 0;">
 							</div>
@@ -213,11 +207,11 @@
 		commentCount ++;
 		var d = new Date(comment.time);
 		$("#commentHeight").append(
-			"<div class=\"card\" style=\"margin: 5px 0\">" +
+			"<div id="+ comment.id +" alt=\""+ commentCount +"\" class=\"card comment\" style=\"margin: 5px 0\">" +
 				"<div class=\"card-heading image\" style=\"padding-bottom:10px\">" +
-					"<button class=\"btn pull-right\">+1</button>" +
+					"<button class=\"btn pull-right plus\">+1</button>" +
 					"<div style=\"display:table-row\">" +
-						"<img style=\"display:table-cell\" class=\"floor\" id="+ comment.id +" src=\"holder.js/46x46/sky/text:"+ commentCount +"\" alt=\""+ commentCount +"\"/>" +
+						"<img style=\"display:table-cell\" class=\"floor\" src=\"holder.js/46x46/sky/text:"+ commentCount +"\" />" +
 						"<div style=\"display:table-cell\" class=\"card-heading-header\">" +
 							"<span style=\"font-size:15px;color:black;\">"+ comment.name +"</span>" +
 							"<span>" + d.getFullYear() + "/" + d.getMonth() + "/" + d.getDate() + " " + d.toLocaleTimeString() + "</span>" +
@@ -237,8 +231,7 @@
 	<% if(auth){ %>
 	$('#commentHeight').on('click', '.floor', function(event){
 		var pc = {
-			article_id : "<%= reqid %>",
-			id : $(this).attr('id'),
+			id : $(this).parent().parent().parent().attr('id'),
 			point : $(this).attr('data-src').split("/")[2] == "sky" ? true : false
 		}
 		$.post("/articles/<%= reqid %>/point", pc);
@@ -263,24 +256,36 @@
 	});
 	<% } %>
 	
+	$('#commentHeight').on('click', '.plus', function(event){
+		var cp = {
+			id : $(this).parent().parent().attr('id'),
+			plus : $(this).hasClass("btn-danger") ? false : true
+		}
+		$(this).hasClass("btn-danger") ? $(this).removeClass("btn-danger") : $(this).addClass("btn-danger");
+		$.post("/articles/<%= reqid %>/plus", cp);
+	});
+	
+	socket.on('getPlus<%= reqid %>', function(cp){
+		var b = $("#" + cp.id).find("button");
+		b.html("+"+cp.n);
+	});
+	
 	socket.on('setComment<%= reqid %>', function(pc){
-		var id = "#" + pc.id;
-		$(id).attr('data-src', "holder.js/46x46/"+ ( pc.point == "true" ? "lava" : "sky" ) +"/text:"+ $(id).attr('alt'));
+		$("#"+pc.id).find("img").attr('data-src', "holder.js/46x46/"+ ( pc.point == "true" ? "lava" : "sky" ) +"/text:"+ $("#"+pc.id).attr('alt'));
 		Holder.run();
 	});
 	
 	socket.on('getInput<%= reqid %>', function(iv){
 		<% if(auth){ %>
 		var d = $(".getInput").find("[alt='"+ iv.num +"']");
-		d.parent().after("<div class=\"alert  alert-info\" style=\"margin:-2px 0 0 0\">" + iv.text + "</div>");
-		d.parent().remove();
+		d.parent().before("<div class=\"alert  alert-info\" style=\"margin:2px 0\">" + iv.text + "</div>");
 		<% } else { %>
-		var d = $(".card").find("[alt='"+ iv.num +"']").parent().parent().parent();
+		var n = parseInt(iv.num) + 1;
+		var d = $(".comment[alt='"+ n +"']");
 		if(d.length > 0 )
-			if( iv.num == 0 ) d.before("<div class=\"alert  alert-info\" style=\"margin:-2px 0 0 0\">" + iv.text + "</div>");
-			else d.after("<div class=\"alert  alert-info\" style=\"margin:-2px 0 0 0\">" + iv.text + "</div>");
+			d.before("<div class=\"alert  alert-info\" style=\"margin:2px 0\">" + iv.text + "</div>");
 		else
-			$('#commentHeight').append("<div class=\"alert  alert-info\" style=\"margin:-2px 0 0 0\">" + iv.text + "</div>");
+			$('#commentHeight').append("<div class=\"alert  alert-info\" style=\"margin:2px 0\">" + iv.text + "</div>");
 		<% } %>
 	});
 	
@@ -296,9 +301,24 @@
 		$('#allimg').animate({
 			scrollTop: $('#imglist').height()
 		}, 500);
-		$("#imglink").attr("href", "/uploads/fullsize/" + imginfo.name);
-		$("#imgfull").attr("src", "/uploads/fullsize/" + imginfo.name);
-		$("#imgtext").html(imginfo.text);
+		if($("#imglink").length > 0){
+			alert("QQQ");
+			$("#imglink").attr("href", "/uploads/fullsize/" + imginfo.name);
+			$("#imgfull").attr("src", "/uploads/fullsize/" + imginfo.name);
+			$("#imgtext").html(imginfo.text);
+		}
+		else{
+			$("#imgmain").append(
+				"<div class=\"card-media\" style=\"background-color:#F5F5F5;margin:16px;\">" +
+					"<a class=\"card-media-container\" id=\"imglink\" href=\"/uploads/fullsize/"+imginfo.name+"\" target=\"_blank\">" +
+						"<img id=\"imgfull\" style=\"display: block;margin:auto;max-width: 100%; height: auto;\" src=\"/uploads/fullsize/"+imginfo.name+"\" alt=\"media\"/>" +
+					"</a>" +
+				"</div>" +
+				"<div class=\"card-body\">" +
+					"<p id=\"imgtext\">"+imginfo.text+"</p>" +
+				"</div>"
+			);
+		}
 		imgCount ++;
 	});
 	

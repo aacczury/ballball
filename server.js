@@ -55,6 +55,7 @@ app.get('/articles/:id/:imgid', story.showArticleImage);
 app.post('/articles/:id/login', story.login);
 app.post('/articles/:id/upload', story.upload);
 app.post('/articles/:id/point', story.point);
+app.post('/articles/:id/plus', story.plus);
 app.post('/articles/:id/outcry', story.outcry);
 
 server.listen(app.get('port'), app.get('ipaddress'), function(){
@@ -62,6 +63,6 @@ server.listen(app.get('port'), app.get('ipaddress'), function(){
 });
 
 io.sockets.on('connection', function (socket) {
-	socket.on('addComment', story.socketComment);
+	socket.on('addComment', story.addComment);
 });
 

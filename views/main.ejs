@@ -33,13 +33,11 @@
 				</button>
 				<a class="brand" href="">胖宅の安價</a>
 				<div class="nav-collapse collapse">
-					<p class="navbar-text pull-right">
+					<!--<p class="navbar-text pull-right">
 						Logged in as <a href="#" class="navbar-link">Username</a>
-					</p>
+					</p>-->
 					<ul class="nav">
 						<li class="active"><a href="/">Home</a></li>
-						<li><a href="#about">About</a></li>
-						<li><a href="#contact">Contact</a></li>
 					</ul>
 				</div><!--/.nav-collapse -->
 			</div>
@@ -60,12 +58,13 @@
 						</form>
 					</div>
 				</div><!--card-->
-				<ul class="nav nav-list" id="imglist">
+				<ul class="nav nav-list" id="articlelist">
 				<% articles.forEach( function(article){ %>
 				<li>
 					<a href="/articles/<%= article._id %>">
 						<h3><%= article.article %></h3>
-						<p class="text-success"><%= article.nickname %></p>
+						<% var d = new Date(article._id.getTimestamp()) %>
+						<strong class="text-success"><%= article.nickname %></strong> | <small class="muted"><%= d.getFullYear() + "/" + d.getMonth() + "/" + d.getDate() + " " + d.toLocaleTimeString() %></small>
 					</a>
 				</li><!--card-->
 				<% }); %>
@@ -82,6 +81,27 @@
 	</div><!--/.fluid-container-->
 	
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/javascripts/bootstrap.min.js"></script>
+<script>
+	var socket = io.connect('http://nodejs-aczry.rhcloud.com/');
+	//var socket = io.connect('http://127.0.0.1');
+	
+	socket.on('getArticle', function(article){
+		var d = new Date(article.time);
+		$("#articlelist").prepend(
+			"<li>" +
+				"<a href=\"/articles/" + article._id + "\">" +
+					"<h3>" + article.article + "</h3>" +
+					"<strong class=\"text-success\">" + article.nickname + "</strong> | <small class=\"muted\">" + d.getFullYear() + "/" + d.getMonth() + "/" + d.getDate() + " " + d.toLocaleTimeString() + "</small>" +
+				"</a>" +
+			"</li>"
+		);
+	});
+	
+	$(function(){
+	});
+</script>
 
 </body>
 </html>

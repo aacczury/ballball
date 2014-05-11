@@ -1,5 +1,4 @@
-var db = require('mongoskin').MongoClient.connect(process.env.OPENSHIFT_MONGODB_DB_URL + "nodejs");
-console.log(process.env.OPENSHIFT_MONGODB_DB_URL + "story");
+var db = require('mongoskin').MongoClient.connect(process.env.OPENSHIFT_MONGODB_DB_URL + "nodejs"); console.log(process.env.OPENSHIFT_MONGODB_DB_URL + "story");
 
 //var db = require('mongoskin').MongoClient.connect("mongodb://localhost:27017/story");
 var fs = require('fs');
@@ -25,6 +24,9 @@ module.exports = function(io){
 			}
 			db.collection('articles').insert(article, function(err, result){
 				console.log(result);
+				var art = result[0];
+				art.time = art._id.getTimestamp();
+				io.sockets.emit('getArticle', art);
 				res.redirect('/');
 			});
 		},
@@ -32,10 +34,18 @@ module.exports = function(io){
 		showArticle : function(req, res) {
 			var id = req.params.id;
 			var auth = req.session.valid ? req.session.valid[id] : null;
+			var plus = req.session.plus ? req.session.plus : {};
 			db.collection('comments').find({'article_id': id}).sort({'_id':1}).toArray(function(err, comments) {
 				db.collection('images').find({'article_id': id}).toArray(function(err, images){
 					db.collection('inputs').find({'article_id': id}).sort({'num':1}).toArray(function(err, inputs){
-						res.render('story', { reqid: id, auth: auth, comments: comments, images: images, inputs: inputs });
+						var hashInputs = {};
+						inputs.forEach( function(input){
+							if(!hashInputs[input.num])
+								hashInputs[input.num] = [];
+							hashInputs[input.num].push(input);
+						});
+						console.log(JSON.stringify(hashInputs));
+						res.render('story', { reqid: id, auth: auth, plus: plus, comments: comments, images: images, inputs: hashInputs });
 					});
 				});
 			});
@@ -60,13 +70,14 @@ module.exports = function(io){
 				console.log(article);
 				var sha1 = crypto.createHash('sha1');
 				sha1.update(req.body.password);
-				req.session.article_id = id;
-				req.session.valid = {};
+				if(!req.session.valid)
+					req.session.valid = {};
 				if(article.password == sha1.digest('hex'))
 					req.session.valid[id] = true;
 				else 
 					req.session.valid[id] = false;
 				console.log("auth: " + req.session.valid[id]);
+				req.session.save();
 				res.redirect('/articles/' + id);
 			});
 		},
@@ -118,8 +129,8 @@ module.exports = function(io){
 			}
 		},
 
-
-		socketComment : function (comment) {
+		addComment : function (comment) {
+			comment.plus = 1;
 			console.log('Adding comment: ' + JSON.stringify(comment));
 			db.collection('comments').insert(comment, function(err, result){
 				console.log(result);
@@ -128,9 +139,28 @@ module.exports = function(io){
 				newComment.name = result[0].nickname;
 				newComment.content = result[0].content;
 				newComment.time = result[0]._id.getTimestamp();
+				newComment.plus = result[0].plus;
 				
 				console.log("Comment name: " + JSON.stringify(newComment));
 				io.sockets.emit('newComment' + result[0].article_id, newComment);
+			});
+		},
+		
+		plus : function(req, res){
+			console.log(JSON.stringify(req.body));
+			var plus = req.body.plus == "true" ? 1 : -1;
+			db.collection('comments').updateById(req.body.id, {$inc:{plus: plus}}, function(err, result){
+				console.log(result);
+				db.collection('comments').findById(req.body.id, function(err, result){
+					console.log(JSON.stringify(result));
+					var p = req.body;
+					p.n = result.plus;
+					io.sockets.emit('getPlus' + req.params.id, p);
+					if(!req.session.plus)
+						req.session.plus = {};
+					req.session.plus[req.body.id] = req.body.plus == "true" ? true : false;
+					req.session.save();
+				});
 			});
 		},
 		
