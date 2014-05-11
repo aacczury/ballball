@@ -15,8 +15,8 @@ app.configure(function () {
 	app.use(express.cookieParser());
 	app.use(express.session({
 		secret: "=911#e4)ad@849e+c21{35/4c*ee4[21$d8!b2}d_69790&350(8]",
-		/*store: sessiondb = new MongoStore({
-			host: 'localhost',
+		store: sessiondb = new MongoStore({
+			/*host: 'localhost',
 			port: 27017,
 			db: 'story',
 			collection: 'sessions',*/
